@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - main
-      - ci
+      - module_30
   pull_request:
     branches:
       - main
@@ -33,13 +33,13 @@ jobs:
         run: pytest tests
 
       - name: Run MyPy type checking
-        run: mypy src/
+        run: mypy .
 
       - name: Run Black formatting check
-        run: black --diff --check src/
+        run: black --diff --check .
 
       - name: Run Isort check
-        run: isort --check-only src/
+        run: isort --check-only .
 
       - name: Run Flake8 linting
-        run: flake8 src/
+        run: flake8 .
