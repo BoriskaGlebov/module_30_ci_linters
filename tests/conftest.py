@@ -1,4 +1,4 @@
-import asyncio
+import os
 from random import choice, randint
 
 from pytest import fixture
@@ -105,8 +105,4 @@ async def db_client():
         await session.commit()
         print(rec_list)
     yield
-    # os.remove('test_recipes.db')
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
+    os.remove("test_recipes.db")
