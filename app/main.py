@@ -93,7 +93,7 @@ async def shutdown():
         Recipes(
             name=choice(name),
             ingredients={choice(ingredients): f"{randint(1, n + 1)} шт" for n in range(randint(1, 5))},
-            description=",".join([choice(description) for l in range(3)]),
+            description=",".join([choice(description) for _ in range(3)]),
             some_inf=ListRecipes(),
         )
         for _ in range(10)
@@ -105,7 +105,7 @@ async def shutdown():
 
 
 @app.on_event("shutdown")
-async def shutdown():
+async def shutdowns():
     await async_session.close()
     await engine.dispose()
 
