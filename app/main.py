@@ -89,7 +89,7 @@ async def shutdown():
         "резать полосками",
         "варить до полной готовности",
     ]
-    rec_list: list = [
+    rec_list = [
         Recipes(
             name=choice(name),
             ingredients={choice(ingredients): f"{randint(1, n + 1)} шт" for n in range(randint(1, 5))},
@@ -118,10 +118,8 @@ async def hello():
 @app.get("/recipes/{id}", response_model=RecipesOut)
 async def get_recipes_id(id: int) -> Recipes:
     async with async_session() as session:
-        qr: [Recipes] = await session.execute(
-            select(Recipes).where(Recipes.id == id).options(selectinload(Recipes.some_inf))
-        )
-        res: Recipes = qr.scalars().one_or_none()
+        qr = await session.execute(select(Recipes).where(Recipes.id == id).options(selectinload(Recipes.some_inf)))
+        res = qr.scalars().one_or_none()
         print(res)
         if res:
             res.some_inf.views += 1
