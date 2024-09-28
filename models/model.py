@@ -1,10 +1,8 @@
 from random import randint
-from typing import Dict
 
+from database import Base
 from sqlalchemy import Column, ForeignKey, PickleType
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from models.database import Base
 
 
 class Recipes(Base):
@@ -12,7 +10,7 @@ class Recipes(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     # не нашел способ как записывать в БД словарь или список, в том числе хотелось бы записать через mapped_column
-    ingredients: Mapped[Dict] = Column(PickleType, nullable=False)
+    ingredients = Column(PickleType, nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
     some_inf: Mapped["ListRecipes"] = relationship(back_populates="recipe", cascade="all, delete-orphan")
 
