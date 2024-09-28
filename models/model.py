@@ -1,8 +1,9 @@
 from random import randint
 
-from database import Base
 from sqlalchemy import Column, ForeignKey, PickleType
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from models.database import Base
 
 
 class Recipes(Base):
