@@ -98,7 +98,7 @@ async def db_client(tmp_path):
         Recipes(
             name=choice(name),
             ingredients={choice(ingredients): f"{randint(1, n + 1)} шт" for n in range(randint(1, 5))},
-            description=",".join([choice(description) for l in range(3)]),
+            description=",".join([choice(description) for _ in range(3)]),
             some_inf=ListRecipes(),
         )
         for _ in range(10)
