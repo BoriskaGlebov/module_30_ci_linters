@@ -1,4 +1,3 @@
-import os
 from random import choice, randint
 
 from pytest import fixture
@@ -7,15 +6,19 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from models.database import Base
 from models.model import ListRecipes, Recipes
 
-test_db_url = "sqlite+aiosqlite:///test_recipes.db"
-
-engine = create_async_engine(test_db_url, echo=False)
-async_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+# test_db_url = "sqlite+aiosqlite:///test_recipes.db"
+#
+# engine = create_async_engine(test_db_url, echo=False)
+# async_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
 
 @fixture
-async def db_client():
+async def db_client(tmp_path):
     # asyncio.run(main())
+    test_db_url = f"sqlite+aiosqlite:///{tmp_path}.db"
+
+    engine = create_async_engine(test_db_url, echo=False)
+    async_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
@@ -104,5 +107,5 @@ async def db_client():
         session.add_all(rec_list)
         await session.commit()
         print(rec_list)
-    yield
-    os.remove("test_recipes.db")
+        yield session
+    # os.remove("test_recipes.db")
