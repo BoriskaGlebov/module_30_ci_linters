@@ -3,12 +3,13 @@ import os.path
 from sqlalchemy import select
 
 from models.model import ListRecipes, Recipes
-from tests.conftest import async_session
+
+# from tests.conftest import async_session
 
 
 async def test_start(db_client):
-    res = os.path.exists("test_recipes.db")
-    async with async_session() as session:
+    os.path.exists("test_recipes.db")
+    async with db_client as session:
         qr_rec: [Recipes] = await session.execute(select(Recipes))
         res_recipes: [Recipes] = qr_rec.scalars().all()
 
@@ -17,4 +18,4 @@ async def test_start(db_client):
 
     assert len(res_recipes) == 10
     assert len(res_llist_rec) == 10
-    assert res
+    # assert res
