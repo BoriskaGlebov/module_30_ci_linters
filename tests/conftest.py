@@ -1,111 +1,67 @@
-from random import choice, randint
+import asyncio
 
 from pytest import fixture
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from starlette.testclient import TestClient
 
+from app.main import app, get_session
 from models.database import Base
-from models.model import ListRecipes, Recipes
+from models.model import start_data
 
-# test_db_url = "sqlite+aiosqlite:///test_recipes.db"
-#
-# engine = create_async_engine(test_db_url, echo=False)
-# async_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+test_db_url = f"sqlite+aiosqlite:///test_recipes.db"
+new_async_engine = create_async_engine(test_db_url, echo=False)
+new_async_session = async_sessionmaker(new_async_engine, expire_on_commit=False, class_=AsyncSession)
 
 
-@fixture
-async def db_client(tmp_path):
-    # asyncio.run(main())
-    test_db_url = f"sqlite+aiosqlite:///{tmp_path}.db"
+async def get_session_override() -> AsyncSession:
+    async with new_async_session() as session:
+        yield session
 
-    engine = create_async_engine(test_db_url, echo=False)
-    async_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
-    async with engine.begin() as conn:
+
+app.dependency_overrides[get_session] = get_session_override
+
+
+@fixture(scope="session")
+def start_rows():
+    res = start_data()
+    return res
+
+
+@fixture(scope="session")
+def event_loop():
+    loop = asyncio.new_event_loop()
+    yield loop
+    loop.close()
+
+
+@fixture(scope="session")
+async def prepare_database(start_rows):
+    async with new_async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
-    name = [
-        "Жаркое",
-        "Суп",
-        "Жареная картошка",
-        "Макароны",
-        "Запеканка",
-        "Омлет",
-        "Овсяная каша с фруктами",
-        "Шашлык",
-        "Борщ",
-        "Плов",
-        "Компот",
-        "Запеканка",
-        "Торт",
-        "Гречневая каша с тушенкой",
-        "Овощной салат",
-        "Перловая каша",
-        "Лазанья",
-        "Винегрет",
-    ]
-    ingredients = [
-        "лук",
-        "морковка",
-        "макароны",
-        "свинина",
-        "картофель",
-        "огурцы",
-        "помидоры",
-        "болгарский перец",
-        "яблоки",
-        "бананы",
-        "апельсины",
-        "сливочное масло",
-        "соль",
-        "специи",
-        "чеснок",
-        "сахар",
-        "варенье",
-        "мята",
-        "свекла",
-        "молоко",
-        "сок",
-        "кабачки",
-        "тыква",
-        "арахис",
-        "грецкий орех",
-        "изюм",
-        "гречка",
-        "рис",
-        "овсяная крупа",
-        "горох",
-        "яйца",
-        "кофе",
-        "чай",
-        "абрикос",
-        "персик",
-        "арбуз",
-    ]
-    description = [
-        "все порезать посолить",
-        "варить 30 минут",
-        "жарить на медленном огне",
-        "резать мелкими кубиками",
-        "помыть",
-        "добавить по вкусу",
-        "запекать в духовке",
-        "температура 200 градусов",
-        "достать из холодильника",
-        "потрясти перед применением",
-        "резать полосками",
-        "варить до полной готовности",
-    ]
-    rec_list: list = [
-        Recipes(
-            name=choice(name),
-            ingredients={choice(ingredients): f"{randint(1, n + 1)} шт" for n in range(randint(1, 5))},
-            description=",".join([choice(description) for _ in range(3)]),
-            some_inf=ListRecipes(),
-        )
-        for _ in range(10)
-    ]
-    async with async_session() as session:
-        session.add_all(rec_list)
+    async with new_async_session() as session:
+        session.add_all(start_rows)
         await session.commit()
-        print(rec_list)
+
+
+@fixture(scope="session")
+async def db_session(prepare_database):
+    async with new_async_session() as session:
         yield session
-    # os.remove("test_recipes.db")
+        await session.rollback()
+
+
+#
+@fixture
+def api_client(db_session):
+    client = TestClient(app=app)
+    yield client
+    client.close()
+
+
+#
+# #
+# @fixture(scope="session")
+# async def async_client(db_session):
+#     async with AsyncClient(app=app, base_url="http://test") as client:
+#         yield client

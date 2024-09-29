@@ -13,7 +13,7 @@ class ListRecipesModelOut(ListRecipesModel):
     views: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class RecipesModel(BaseModel):
@@ -31,4 +31,4 @@ class RecipesOut(RecipesModel):
     some_inf: ListRecipesModelOut
 
     class Config:
-        orm_mode = True
+        from_attributes = True
