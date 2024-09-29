@@ -23,6 +23,14 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Set PYTHONPATH
+        run: |
+          echo "PYTHONPATH=$(pwd):$(pwd)" >> $GITHUB_ENV
+      - name: Verify PYTHONPATH
+        run: |
+          echo "PYTHONPATH=$PYTHONPATH"
+          python -c "import sys; print(sys.path)"
+
       - name: Install dependencies
         run:  pip install -r requirements.txt
       - name: List directory contents
