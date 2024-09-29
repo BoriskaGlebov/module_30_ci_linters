@@ -1,4 +1,5 @@
 import asyncio
+from typing import AsyncGenerator
 
 from pytest import fixture
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -13,7 +14,7 @@ new_async_engine = create_async_engine(test_db_url, echo=False)
 new_async_session = async_sessionmaker(new_async_engine, expire_on_commit=False, class_=AsyncSession)
 
 
-async def get_session_override() -> AsyncSession:
+async def get_session_override() -> AsyncGenerator:
     async with new_async_session() as session:
         yield session
 

@@ -8,11 +8,11 @@ from models.model import ListRecipes, Recipes
 async def test_start(db_session):
     res = os.path.exists("test_recipes.db")
     # async with db_client as session:
-    qr_rec: [Recipes] = await db_session.execute(select(Recipes))
-    res_recipes: [Recipes] = qr_rec.scalars().all()
+    qr_rec = await db_session.execute(select(Recipes))
+    res_recipes = qr_rec.scalars().all()
     #
-    qr_list_rec: [ListRecipes] = await db_session.execute(select(ListRecipes))
-    res_list_rec: [ListRecipes] = qr_list_rec.scalars().all()
+    qr_list_rec = await db_session.execute(select(ListRecipes))
+    res_list_rec = qr_list_rec.scalars().all()
     assert res
     assert len(res_recipes) == 10
     assert len(res_list_rec) == 10
@@ -27,8 +27,8 @@ async def test_add_recipes(db_session):
     )
     db_session.add(test_recipe)
     await db_session.commit()
-    qr_rec: [Recipes] = (await db_session.execute(select(Recipes))).scalars().all()
-    qr_list_rec: [ListRecipes] = (await db_session.execute(select(ListRecipes))).scalars().all()
+    qr_rec = (await db_session.execute(select(Recipes))).scalars().all()
+    qr_list_rec = (await db_session.execute(select(ListRecipes))).scalars().all()
     assert len(qr_rec) == 11
     assert len(qr_list_rec) == 11
 

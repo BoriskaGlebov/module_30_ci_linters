@@ -1,9 +1,9 @@
 from contextlib import asynccontextmanager
+from typing import AsyncGenerator
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.params import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 
@@ -14,7 +14,7 @@ from models.utilits.schemas import ListRecipesModel, RecipesIn, RecipesOut
 app = FastAPI()
 
 
-async def get_session() -> AsyncSession:
+async def get_session() -> AsyncGenerator:
     """Функция необходима для тестирования, теперь на тестах
     обращеие происходит к тестовой БД, а работа в Боевой БД"""
     async with async_session() as session:
@@ -36,7 +36,6 @@ async def lifespan(app: FastAPI):
         yield  # Control returns here after startup logic
     # Code to run on shutdown
     print("Application is shutting down...")
-    await async_session.close()
     await async_engine.dispose()
 
 
