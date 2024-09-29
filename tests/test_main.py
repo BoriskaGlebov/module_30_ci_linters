@@ -21,7 +21,7 @@ async def test_start(db_session):
 async def test_add_recipes(db_session):
     test_recipe = Recipes(
         name="Test_recipes",
-        ingredients={"Интгридиент1": f"10 шт", "Интгридиент2": f"11 шт", "Интгридиент3": f"13 шт"},
+        ingredients={"Интгридиент1": "10 шт", "Интгридиент2": "11 шт", "Интгридиент3": "13 шт"},
         description="Тестовое сообщение",
         some_inf=ListRecipes(),
     )

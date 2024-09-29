@@ -103,7 +103,7 @@ def start_data() -> list[Recipes]:
         "резать полосками",
         "варить до полной готовности",
     ]
-    rec_list = [
+    return [
         Recipes(
             name=choice(name),
             ingredients={choice(ingredients): f"{randint(1, n + 1)} шт" for n in range(randint(1, 5))},
@@ -112,4 +112,3 @@ def start_data() -> list[Recipes]:
         )
         for _ in range(10)
     ]
-    return rec_list

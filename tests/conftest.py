@@ -9,7 +9,7 @@ from app.main import app, get_session
 from models.database import Base
 from models.model import start_data
 
-test_db_url = f"sqlite+aiosqlite:///test_recipes.db"
+test_db_url = "sqlite+aiosqlite:///test_recipes.db"
 new_async_engine = create_async_engine(test_db_url, echo=False)
 new_async_session = async_sessionmaker(new_async_engine, expire_on_commit=False, class_=AsyncSession)
 
@@ -24,8 +24,7 @@ app.dependency_overrides[get_session] = get_session_override
 
 @fixture(scope="session")
 def start_rows():
-    res = start_data()
-    return res
+    return start_data()
 
 
 @fixture(scope="session")
