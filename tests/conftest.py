@@ -1,4 +1,5 @@
 import asyncio
+import os
 from typing import AsyncGenerator
 
 from pytest import fixture
@@ -10,6 +11,7 @@ from models.database import Base
 from models.model import start_data
 
 test_db_url = "sqlite+aiosqlite:///test_recipes.db"
+test_path = os.path.abspath("test_recipes.db")
 new_async_engine = create_async_engine(test_db_url, echo=False)
 new_async_session = async_sessionmaker(new_async_engine, expire_on_commit=False, class_=AsyncSession)
 
@@ -27,6 +29,7 @@ def start_rows():
     return start_data()
 
 
+#
 @fixture(scope="session")
 def event_loop():
     loop = asyncio.new_event_loop()
@@ -49,6 +52,7 @@ async def db_session(prepare_database):
     async with new_async_session() as session:
         yield session
         await session.rollback()
+        os.remove(test_path)
 
 
 #
